@@ -7,6 +7,7 @@
     "build": "prisma generate",
     "start": "tsx src/server.ts",
     "seed": "tsx src/seed/demo.ts",
+    "seed:demo": "tsx src/seed/demo-sales.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client.ts';
 import ValidationResult from '../components/ValidationResult.tsx';
 
@@ -17,6 +18,7 @@ const REQUIRED_FIELDS: Record<string, string[]> = {
 };
 
 export default function Pipeline() {
+  const navigate = useNavigate();
   const [opps, setOpps] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpp, setDialogOpp] = useState<any>(null);
@@ -104,6 +106,12 @@ export default function Pipeline() {
                       Advance → {STAGE_TRANSITIONS[opp.stageKey]}
                     </button>
                   )}
+                  <button
+                    onClick={() => navigate(`/opportunities/${opp.id}/quote`)}
+                    className="mt-1 text-xs text-gray-500 hover:text-indigo-600 transition-colors"
+                  >
+                    Quote →
+                  </button>
                 </div>
               ))}
             </div>

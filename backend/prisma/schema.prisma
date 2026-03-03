@@ -10,14 +10,28 @@ datasource db {
 model Organization {
   id                       String          @id @default(uuid())
   name                     String
+  website                  String?
+  industry                 String?
   selectedVerticalPolicyId String?
   policies                 VerticalPolicy[]
+  users                    User[]
   leads                    Lead[]
   accounts                 Account[]
   contacts                 Contact[]
   opportunities            Opportunity[]
   auditEvents              AuditEvent[]
   aiDrafts                 AiDraft[]
+}
+
+model User {
+  id    String       @id @default(uuid())
+  orgId String
+  org   Organization @relation(fields: [orgId], references: [id])
+  email String
+  name  String
+  roles String[]     @default([])
+
+  @@unique([orgId, email])
 }
 
 model VerticalPolicy {
@@ -27,6 +41,8 @@ model VerticalPolicy {
   verticalKey String
   version     String
   config      Json
+  activatedAt DateTime?
+  activatedBy String?
 }
 
 model Account {
@@ -91,6 +107,10 @@ model Quote {
   nonStandardTerms Json        @default("[]")
   approvalStatus   String      @default("NotRequired")
   marginPercent    Float?
+  submittedBy      String?
+  approvedBy       String?
+  rejectedBy       String?
+  rejectionReason  String?
 }
 
 model Handoff {
@@ -116,6 +136,8 @@ model AuditEvent {
   afterStageKey  String?
   policyVersion  String
   policyId       String
+  entityType     String?
+  entityId       String?
 }
 
 model AiDraft {

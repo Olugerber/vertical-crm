@@ -8,6 +8,7 @@ import quotesRouter from './routes/quotes.js';
 import handoffsRouter from './routes/handoffs.js';
 import policiesRouter from './routes/policies.js';
 import auditRouter from './routes/audit.js';
+import adminRouter from './routes/admin.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -27,6 +28,7 @@ app.use('/api/quotes', quotesRouter);
 app.use('/api/handoffs', handoffsRouter);
 app.use('/api/policies', policiesRouter);
 app.use('/api/audit', auditRouter);
+app.use('/api/admin', adminRouter);
 
 app.listen(PORT, () => {
   console.log(`verticalCrm API running on http://localhost:${PORT}`);

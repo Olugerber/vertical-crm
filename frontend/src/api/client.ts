@@ -3,9 +3,9 @@ const BASE_URL = import.meta.env['VITE_API_URL']
   : '/api';
 
 function getAuth() {
-  const orgId = localStorage.getItem('x-org-id') ?? 'org-acme';
-  const userId = localStorage.getItem('x-user-id') ?? 'user-demo';
-  const roles = localStorage.getItem('x-user-roles') ?? 'AE';
+  const orgId = localStorage.getItem('x-org-id') ?? 'org-acme-sales';
+  const userId = localStorage.getItem('x-user-id') ?? 'user-sm';
+  const roles = localStorage.getItem('x-user-roles') ?? 'SalesManager';
   return { orgId, userId, roles };
 }
 
@@ -72,5 +72,46 @@ export const api = {
   },
   audit: {
     list: () => request<any[]>('/audit'),
+  },
+  // Admin API
+  admin: {
+    getOrg: () => request<any>('/admin/org'),
+    updateOrg: (body: any) => request<any>('/admin/org', { method: 'PUT', body: JSON.stringify(body) }),
+    getActivePolicy: () => request<any>('/admin/policy/active'),
+    activatePolicy: (config: any) => request<any>('/admin/policy/activate', { method: 'POST', body: JSON.stringify({ config }) }),
+    getUsers: () => request<any[]>('/admin/users'),
+    createUser: (body: any) => request<any>('/admin/users', { method: 'POST', body: JSON.stringify(body) }),
+    updateRoles: (id: string, roles: string[]) => request<any>(`/admin/users/${id}/roles`, { method: 'POST', body: JSON.stringify({ roles }) }),
+  },
+  // Quotes by opportunity
+  quotesByOpp: (opportunityId: string) => request<any[]>(`/quotes/by-opportunity/${opportunityId}`),
+  // Quote update
+  updateQuote: (id: string, body: any) => request<any>(`/quotes/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  // Audit with filters
+  auditList: (params?: { entityType?: string; entityId?: string; from?: string; to?: string }) => {
+    const qs = new URLSearchParams();
+    if (params?.entityType) qs.set('entityType', params.entityType);
+    if (params?.entityId) qs.set('entityId', params.entityId);
+    if (params?.from) qs.set('from', params.from);
+    if (params?.to) qs.set('to', params.to);
+    return request<any[]>(`/audit${qs.toString() ? '?' + qs.toString() : ''}`);
+  },
+  auditExportCsv: async (params?: { entityType?: string; entityId?: string; from?: string; to?: string }) => {
+    const { orgId, userId, roles } = getAuth();
+    const qs = new URLSearchParams();
+    if (params?.entityType) qs.set('entityType', params.entityType);
+    if (params?.entityId) qs.set('entityId', params.entityId);
+    if (params?.from) qs.set('from', params.from);
+    if (params?.to) qs.set('to', params.to);
+    const url = `${BASE_URL}/audit/export.csv${qs.toString() ? '?' + qs.toString() : ''}`;
+    const res = await fetch(url, {
+      headers: { 'X-Org-Id': orgId, 'X-User-Id': userId, 'X-User-Roles': roles },
+    });
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `audit-export-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   },
 };

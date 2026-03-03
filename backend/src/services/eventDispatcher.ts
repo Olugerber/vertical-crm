@@ -69,7 +69,7 @@ function makeQuoteRepo(): QuoteRepository {
   };
 }
 
-function makeAuditRepo(orgId: string): AuditRepository {
+function makeAuditRepo(orgId: string, entityType?: string, entityId?: string): AuditRepository {
   return {
     async record(event: AuditEventRecord) {
       const ae = await prisma.auditEvent.create({
@@ -82,6 +82,8 @@ function makeAuditRepo(orgId: string): AuditRepository {
           afterStageKey: event.afterStageKey,
           policyVersion: event.policyVersion,
           policyId: event.policyId,
+          entityType,
+          entityId,
         },
       });
       return ae.id;
@@ -206,7 +208,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'lead', leadId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -228,7 +230,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'lead', leadId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -251,7 +253,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'lead', leadId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -273,7 +275,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'lead', leadId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -353,7 +355,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'opportunity', opportunityId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -376,7 +378,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'opportunity', opportunityId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -399,7 +401,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'opportunity', opportunityId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -426,7 +428,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'contact', contactId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -449,7 +451,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'contact', contactId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -473,7 +475,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'contact', contactId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -520,7 +522,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'quote', quoteId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -543,7 +545,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'quote', quoteId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -567,7 +569,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'quote', quoteId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -593,7 +595,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'handoff', handoffId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -615,7 +617,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'handoff', handoffId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };
@@ -639,7 +641,7 @@ export async function dispatch(input: DispatchInput): Promise<DispatchResult> {
 
       const appObj: ApplicationObject = {
         validationResult: validation,
-        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
+        repos: { opp: makeOppRepo(), quote: makeQuoteRepo(), audit: makeAuditRepo(organizationId, 'handoff', handoffId), consent: makeConsentRepo(), handoff: makeHandoffRepo(), lead: makeLeadRepo(), ai: makeAiRepo(organizationId) },
         ports: { notifications: makeNotificationPort(), integrations: makeIntegrationPort(), llm: makeLlmPort() },
         validationContext: validationObj,
       };

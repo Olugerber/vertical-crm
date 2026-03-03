@@ -29,6 +29,18 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/by-opportunity/:opportunityId', async (req, res) => {
+  try {
+    const quotes = await prisma.quote.findMany({
+      where: { opportunityId: req.params['opportunityId'], opportunity: { orgId: req.auth.organizationId } },
+      orderBy: { id: 'desc' },
+    });
+    res.json(quotes);
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const quote = await prisma.quote.findFirst({
@@ -36,6 +48,33 @@ router.get('/:id', async (req, res) => {
     });
     if (!quote) { res.status(404).json({ error: 'Not found' }); return; }
     res.json(quote);
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+router.patch('/:id', async (req, res) => {
+  try {
+    const quote = await prisma.quote.findFirst({
+      where: { id: req.params['id'], opportunity: { orgId: req.auth.organizationId } },
+    });
+    if (!quote) { res.status(404).json({ error: 'Not found' }); return; }
+    // Only allow updates when NotRequired or Pending (not after approved/rejected)
+    if (quote.approvalStatus === 'Approved' || quote.approvalStatus === 'Rejected') {
+      res.status(422).json({ error: 'Cannot modify an approved or rejected quote' });
+      return;
+    }
+    const { discountPercent, lineItems, marginPercent, nonStandardTerms } = req.body;
+    const updated = await prisma.quote.update({
+      where: { id: req.params['id'] },
+      data: {
+        ...(discountPercent !== undefined && { discountPercent: Number(discountPercent), approvalStatus: 'NotRequired' }),
+        ...(lineItems !== undefined && { lineItems }),
+        ...(marginPercent !== undefined && { marginPercent: Number(marginPercent) }),
+        ...(nonStandardTerms !== undefined && { nonStandardTerms }),
+      },
+    });
+    res.json(updated);
   } catch (e: any) {
     res.status(500).json({ success: false, error: e.message });
   }
