@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "npx prisma migrate deploy && tsx src/server.ts",
+    "startCommand": "npx prisma migrate deploy || (echo 'MIGRATION FAILED — check DATABASE_URL' && exit 1) && tsx src/server.ts",
     "healthcheckPath": "/api/health",
     "restartPolicyType": "ON_FAILURE"
   }
