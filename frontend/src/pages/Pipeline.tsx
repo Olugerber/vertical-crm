@@ -77,11 +77,18 @@ export default function Pipeline() {
       <div className="flex gap-4 overflow-x-auto pb-4">
         {STAGES.map(stage => (
           <div key={stage} className="flex-shrink-0 w-64">
-            <div className="bg-gray-200 rounded-t-md px-3 py-2">
-              <h3 className="text-sm font-semibold text-gray-700">{stage}</h3>
-              <span className="text-xs text-gray-500">{byStage(stage).length} deals</span>
+            <div className="bg-gray-100 border border-b-0 border-gray-200 rounded-t-lg px-3 py-2.5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">{stage}</h3>
+                <span className="text-xs font-medium text-gray-400 bg-white px-1.5 py-0.5 rounded-full border border-gray-200">{byStage(stage).length}</span>
+              </div>
+              {byStage(stage).length > 0 && (
+                <p className="text-xs text-gray-500 mt-0.5">
+                  ${byStage(stage).reduce((s: number, o: any) => s + (o.amount ?? 0), 0).toLocaleString()}
+                </p>
+              )}
             </div>
-            <div className="bg-gray-50 rounded-b-md min-h-32 p-2 space-y-2">
+            <div className="bg-gray-50 border border-gray-200 rounded-b-lg min-h-32 p-2 space-y-2">
               {byStage(stage).map(opp => (
                 <div key={opp.id} className="bg-white rounded-md border border-gray-200 p-3 shadow-sm">
                   <p className="text-sm font-medium text-gray-900 mb-1">{opp.name}</p>
