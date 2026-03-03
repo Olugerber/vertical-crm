@@ -12,8 +12,10 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const BANT_KEYS = ['budget', 'authority', 'need', 'timeline'];
+const SOURCES = ['Inbound', 'Outbound', 'Partner', 'Event', 'Referral'];
 
 type ModalState =
+  | { type: 'create'; source: string }
   | { type: 'assign'; lead: any; userId: string }
   | { type: 'qualify'; lead: any; completedKeys: string[] }
   | { type: 'disqualify'; lead: any; reason: string }
@@ -50,7 +52,9 @@ export default function Leads() {
     setActionError(null);
     try {
       let res: any;
-      if (modal.type === 'assign') {
+      if (modal.type === 'create') {
+        res = await api.leads.create({ source: modal.source });
+      } else if (modal.type === 'assign') {
         res = await api.leads.assign(modal.lead.id, { toUserId: modal.userId });
       } else if (modal.type === 'qualify') {
         res = await api.leads.qualify(modal.lead.id, {
@@ -60,7 +64,7 @@ export default function Leads() {
         res = await api.leads.disqualify(modal.lead.id, { reason: modal.reason });
       }
       if (res?.success === false) {
-        setActionError({ id: modal.lead.id, error: res });
+        setActionError({ id: modal.type === 'create' ? '_create' : modal.lead.id, error: res });
         setModal(null);
       } else {
         setModal(null);
@@ -80,7 +84,18 @@ export default function Leads() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Leads</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Leads</h2>
+        <button
+          onClick={() => setModal({ type: 'create', source: 'Inbound' })}
+          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Lead
+        </button>
+      </div>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
         <table className="w-full text-sm">
@@ -159,6 +174,34 @@ export default function Leads() {
           </tbody>
         </table>
       </div>
+
+      {modal?.type === 'create' && (
+        <Modal
+          title="Add Lead"
+          onClose={() => setModal(null)}
+          onConfirm={submitModal}
+          confirmLabel="Create Lead"
+          disabled={busy}
+        >
+          <p className="text-sm text-gray-500 mb-4">Select the lead source to create a new lead.</p>
+          <p className="text-xs font-medium text-gray-700 mb-2">Source</p>
+          <div className="grid grid-cols-2 gap-2">
+            {SOURCES.map(s => (
+              <button
+                key={s}
+                onClick={() => setModal({ ...modal, source: s })}
+                className={`px-3 py-2.5 text-sm rounded-lg border-2 font-medium transition-colors ${
+                  modal.source === s
+                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
 
       {modal?.type === 'assign' && (
         <Modal
