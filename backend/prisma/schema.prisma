@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                       String          @id @default(uuid())
+  name                     String
+  selectedVerticalPolicyId String?
+  policies                 VerticalPolicy[]
+  leads                    Lead[]
+  accounts                 Account[]
+  contacts                 Contact[]
+  opportunities            Opportunity[]
+  auditEvents              AuditEvent[]
+  aiDrafts                 AiDraft[]
+}
+
+model VerticalPolicy {
+  id          String       @id @default(uuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id])
+  verticalKey String
+  version     String
+  config      Json
+}
+
+model Account {
+  id              String        @id @default(uuid())
+  orgId           String
+  org             Organization  @relation(fields: [orgId], references: [id])
+  legalName       String
+  segment         String?
+  territory       String?
+  riskFlags       Json          @default("[]")
+  activeNdaOnFile Boolean       @default(false)
+  contacts        Contact[]
+  opportunities   Opportunity[]
+}
+
+model Contact {
+  id              String       @id @default(uuid())
+  orgId           String
+  org             Organization @relation(fields: [orgId], references: [id])
+  accountId       String
+  account         Account      @relation(fields: [accountId], references: [id])
+  email           String?
+  phone           String?
+  consentStatus   String       @default("Unknown")
+  doNotContact    Boolean      @default(false)
+  consentEvidence Json?
+}
+
+model Lead {
+  id                     String       @id @default(uuid())
+  orgId                  String
+  org                    Organization @relation(fields: [orgId], references: [id])
+  source                 String
+  status                 String       @default("New")
+  assignedToUserId       String?
+  qualificationChecklist Json?
+}
+
+model Opportunity {
+  id                 String       @id @default(uuid())
+  orgId              String
+  org                Organization @relation(fields: [orgId], references: [id])
+  accountId          String
+  account            Account      @relation(fields: [accountId], references: [id])
+  name               String
+  amount             Float
+  expectedCloseDate  DateTime
+  stageKey           String       @default("Prospect")
+  forecastCategory   String       @default("Pipeline")
+  productLineItemIds Json         @default("[]")
+  buyingCommittee    Json         @default("[]")
+  quotes             Quote[]
+  handoffs           Handoff[]
+}
+
+model Quote {
+  id               String      @id @default(uuid())
+  opportunityId    String
+  opportunity      Opportunity @relation(fields: [opportunityId], references: [id])
+  lineItems        Json        @default("[]")
+  discountPercent  Float       @default(0)
+  nonStandardTerms Json        @default("[]")
+  approvalStatus   String      @default("NotRequired")
+  marginPercent    Float?
+}
+
+model Handoff {
+  id                      String      @id @default(uuid())
+  opportunityId           String
+  opportunity             Opportunity @relation(fields: [opportunityId], references: [id])
+  scope                   String?
+  billingDetails          String?
+  startDate               DateTime?
+  keyStakeholderIds       Json        @default("[]")
+  completedChecklistItems Json        @default("[]")
+  status                  String      @default("Draft")
+}
+
+model AuditEvent {
+  id             String       @id @default(uuid())
+  orgId          String
+  org            Organization @relation(fields: [orgId], references: [id])
+  who            String
+  what           String
+  when           DateTime     @default(now())
+  beforeStageKey String?
+  afterStageKey  String?
+  policyVersion  String
+  policyId       String
+}
+
+model AiDraft {
+  id           String       @id @default(uuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id])
+  channel      String
+  body         String
+  riskWarnings Json         @default("[]")
+}
