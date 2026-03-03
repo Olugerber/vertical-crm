@@ -156,7 +156,7 @@ export default function Pipeline() {
               </button>
               <button
                 onClick={submitTransition}
-                disabled={submitting}
+                disabled={submitting || Object.values(formFields).some(v => !v.trim())}
                 className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
               >
                 {submitting ? 'Advancing...' : 'Confirm'}
